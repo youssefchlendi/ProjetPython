@@ -1,10 +1,38 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox,ttk
 import sqlite3
 
 # Connexion à la base de données
 def connexion_db():
     return sqlite3.connect('viticulture.db')
+  
+def obtenir_operations():
+    try:
+        conn = connexion_db()
+        c = conn.cursor()
+        c.execute("SELECT id, nom FROM operations")  # Sélectionne l'id et le nom de chaque opération
+        result = c.fetchall()
+        return result
+    except sqlite3.Error as e:
+        messagebox.showerror("Erreur de base de données", f"Une erreur s'est produite : {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+            
+def obtenir_employes():
+    try:
+        conn = connexion_db()
+        c = conn.cursor()
+        c.execute("SELECT id, nom FROM employes")  # Sélectionne l'id et le nom de chaque employé
+        result = c.fetchall()
+        return result
+    except sqlite3.Error as e:
+        messagebox.showerror("Erreur de base de données", f"Une erreur s'est produite : {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
 
 # Enregistrement de l'opération phytosanitaire
 def enregistrer_phytosanitaire(employe_id, operation_id, maladie, stade, methode, observation):
@@ -26,14 +54,17 @@ def interface_phytosanitaire():
     root = tk.Toplevel()  # Utilisation de Toplevel pour éviter de fermer la fenêtre principale
     root.title("Saisie des Opérations Phytosanitaires")
 
-    # Champs de saisie
+    # Récupérer les employés et les opérations depuis la base de données
+    employes = obtenir_employes()  # Liste des employés
+    operations = obtenir_operations()  # Liste des opérations, à définir ci-dessous
+
     tk.Label(root, text="ID Employé").grid(row=0, column=0)
-    employe_id = tk.Entry(root)
-    employe_id.grid(row=0, column=1)
+    employe_combobox = ttk.Combobox(root, values=[f"{emp[1]} ({emp[0]})" for emp in employes])  # Affiche le nom et l'id
+    employe_combobox.grid(row=0, column=1)
 
     tk.Label(root, text="ID Opération").grid(row=1, column=0)
-    operation_id = tk.Entry(root)
-    operation_id.grid(row=1, column=1)
+    operation_combobox = ttk.Combobox(root, values=[op[1] for op in operations])  # Liste des opérations
+    operation_combobox.grid(row=1, column=1)
 
     tk.Label(root, text="Maladie").grid(row=2, column=0)
     maladie = tk.Entry(root)
@@ -55,9 +86,9 @@ def interface_phytosanitaire():
     def sauvegarder_phytosanitaire():
         try:
             # Vérification des champs vides
-            if not employe_id.get().strip():
+            if not employe_combobox.get().strip():
                 raise ValueError("Le champ 'ID Employé' est obligatoire.")
-            if not operation_id.get().strip():
+            if not operation_combobox.get().strip():
                 raise ValueError("Le champ 'ID Opération' est obligatoire.")
             if not maladie.get().strip():
                 raise ValueError("Le champ 'Maladie' est obligatoire.")
@@ -69,8 +100,8 @@ def interface_phytosanitaire():
                 raise ValueError("Le champ 'Observation' est obligatoire.")
             
             # Validation des types
-            employe_id_val = int(employe_id.get())
-            operation_id_val = int(operation_id.get())
+            employe_id_val = int(employes[employe_combobox.current()][0])
+            operation_id_val = int(operations[operation_combobox.current()][0])
 
             # Enregistrement si toutes les validations sont réussies
             enregistrer_phytosanitaire(employe_id_val, operation_id_val, maladie.get(), stade.get(), methode.get(), observation.get())

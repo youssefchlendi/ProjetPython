@@ -14,6 +14,55 @@ from analyse import AnalyseDonnees  # Importer la classe AnalyseDonnees
  
 def connexion_db():
     return sqlite3.connect('viticulture.db')
+  
+def consulter_tmps_travail():
+    root = tk.Toplevel()
+    root.title(f"Consultation de la Table Temps de Travail")
+    columns = ["id", "employe", "operation", "heures"]
+    tree = ttk.Treeview(root, columns=columns, show='headings')
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    tree.pack(expand=True, fill="both")
+    
+    # Récupérer les données de la table
+    conn = connexion_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT temps_travail.id, employes.nom, operations.nom, temps_travail.heures FROM temps_travail JOIN employes ON temps_travail.employe_id = employes.id JOIN operations ON temps_travail.operation_id = operations.id")
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    # Insérer les données dans le Treeview
+    for row in rows:
+        tree.insert("", "end", values=row)
+        
+    root.mainloop()
+    
+def consulter_phytosanitaires():
+    root = tk.Toplevel()
+    root.title(f"Consultation de la Table Phytosanitaires")
+    columns = ["id", "employe", "operation","maladie", "stade", "methode", "observation", "application_date"]
+    tree = ttk.Treeview(root, columns=columns, show='headings')
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    tree.pack(expand=True, fill="both")
+    
+    # Récupérer les données de la table
+    conn = connexion_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT phytosanitaires.id, employes.nom, operations.nom, maladie, stade, methode, observation, application_date FROM phytosanitaires JOIN employes ON phytosanitaires.employe_id = employes.id JOIN operations ON phytosanitaires.operation_id = operations.id")
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    # Insérer les données dans le Treeview
+    for row in rows:
+        tree.insert("", "end", values=row)
+        
+    root.mainloop()
+    
 
 def consulter_donnees(table_name, columns):
     root = tk.Toplevel()
@@ -65,8 +114,8 @@ def main():
     menu_consultation = tk.Menu(menu_bar, tearoff=0)
     menu_consultation.add_command(label="Consulter Employés", command=lambda: consulter_donnees("employes", ["id", "nom", "poste"]))
     menu_consultation.add_command(label="Consulter Opérations", command=lambda: consulter_donnees("operations", ["id", "nom", "type"]))
-    menu_consultation.add_command(label="Consulter Temps de Travail", command=lambda: consulter_donnees("temps_travail", ["id", "employe_id", "operation_id", "heures"]))
-    menu_consultation.add_command(label="Consulter Phytosanitaires", command=lambda: consulter_donnees("phytosanitaires", ["id", "employe_id", "operation_id", "maladie", "stade", "methode", "observation", "application_date"]))
+    menu_consultation.add_command(label="Consulter Temps de Travail", command=lambda: consulter_tmps_travail())
+    menu_consultation.add_command(label="Consulter Phytosanitaires", command=lambda: consulter_phytosanitaires())
     menu_bar.add_cascade(label="Consultation", menu=menu_consultation)
 
     # Menu Travail
