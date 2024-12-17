@@ -1,6 +1,9 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 import sqlite3
+
+from deep_learning.regression_model import train_work_hours_regression
 
 # Connexion à la base de données
 def connexion_db():
@@ -78,6 +81,7 @@ def interface_creer_operation():
             c = conn.cursor()
             c.execute("INSERT INTO operations (nom, type) VALUES (?, ?)", (nom, type_operation))
             conn.commit()
+            threading.Thread(target=train_work_hours_regression).start()        
             messagebox.showinfo("Succès", "Opération ajoutée avec succès.")
             root.destroy()
         except sqlite3.Error as e:

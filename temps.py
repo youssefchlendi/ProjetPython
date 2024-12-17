@@ -1,6 +1,9 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox,ttk
 import sqlite3
+
+from deep_learning.regression_model import train_work_hours_regression
 
 # Connexion à la base de données
 def connexion_db():
@@ -13,6 +16,7 @@ def enregistrer_temps(employe_id, operation_id, heures):
         c = conn.cursor()
         c.execute("INSERT INTO temps_travail (employe_id, operation_id, heures) VALUES (?, ?, ?)", (employe_id, operation_id, heures))
         conn.commit()
+        threading.Thread(target=train_work_hours_regression).start()        
         messagebox.showinfo("Succès", "Temps de travail enregistré.")
     except sqlite3.Error as e:
         messagebox.showerror("Erreur de base de données", f"Une erreur s'est produite : {e}")
