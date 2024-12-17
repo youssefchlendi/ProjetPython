@@ -11,7 +11,8 @@ from EmailConfig import interface_email_config  # Importer correctement depuis E
 import sqlite3
 from analyse import AnalyseDonnees  # Importer la classe AnalyseDonnees
 from supervised_interface import predict_effectiveness_interface  # Import the new function
-
+from clustering.cluster_employee_work_patterns import cluster_employee_work_patterns
+from clustering.cluster_operations import cluster_operations
  
 def connexion_db():
     return sqlite3.connect('viticulture.db')
@@ -140,7 +141,9 @@ def main():
     menu_analyse = tk.Menu(menu_bar, tearoff=0)
     menu_analyse.add_command(label="Synthèse Annuelle des Travaux", command=analyse_donnees.afficher_synthese_annuelle)
     menu_analyse.add_command(label="Afficher Graphique des Travaux", command=analyse_donnees.afficher_graphique_synthese)
-    menu_analyse.add_command(label="Prédire Efficacité des Traitements", command=predict_effectiveness_interface)  # New Entry
+    menu_analyse.add_command(label="Cluster des Employés (Work Patterns)", command=cluster_employee_work_patterns)
+    menu_analyse.add_command(label="Cluster des Opérations (Time & Frequency)", command=cluster_operations)
+    menu_analyse.add_command(label="Prédire Efficacité des Traitements", command=predict_effectiveness_interface)
     menu_bar.add_cascade(label="Analyse", menu=menu_analyse)
 
     # Configurer le menu
