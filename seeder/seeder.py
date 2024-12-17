@@ -56,7 +56,7 @@ def seed_phytosanitaires(n=30):
     cursor.execute("SELECT id FROM operations WHERE type = 'phytosanitary'")
     operation_ids = [row[0] for row in cursor.fetchall()]
 
-    diseases = ["Powdery Mildew", "Downy Mildew", "Botrytis Bunch Rot"]
+    diseases = ["Powdery Mildew", "Downy Mildew", "Botrytis Bunch Rot", "Black Rot", "Phomopsis Cane and Leaf Spot", "Anthracnose", "Grapevine Leafroll Disease", "Esca", "Eutypa Dieback", "Fanleaf Degeneration", "Crown Gall", "Grapevine Trunk Diseases", "Grapevine Yellow Speckle Viroid", "Grapevine Red Blotch Disease"]
     stages = ["early", "mid", "late"]
     methods = ["spray biologique", "fongicide chimique", "taille et fungicide"]
 
@@ -66,7 +66,7 @@ def seed_phytosanitaires(n=30):
         maladie = fake.random.choice(diseases)
         stade = fake.random.choice(stages)
         methode = fake.random.choice(methods)
-        observation = fake.sentence()
+        observation = fake.random.choice(["dead", "alive", "success", "failure"])
         randomDate = fake.date_between(start_date='-1y', end_date='today')
         cursor.execute(
             "INSERT INTO phytosanitaires (employe_id, operation_id, maladie, stade, methode, observation, application_date) VALUES (?, ?, ?, ?, ?, ?,?)",

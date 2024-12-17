@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox,ttk
 import sqlite3
-
+from deep_learning.supervised_learning import train_and_save_model
+import threading
 # Connexion à la base de données
 def connexion_db():
     return sqlite3.connect('viticulture.db')
@@ -42,6 +43,8 @@ def enregistrer_phytosanitaire(employe_id, operation_id, maladie, stade, methode
         c.execute('''INSERT INTO phytosanitaires (employe_id, operation_id, maladie, stade, methode, observation) 
                      VALUES (?, ?, ?, ?, ?, ?)''', (employe_id, operation_id, maladie, stade, methode, observation))
         conn.commit()
+        # call train_and_save_model in a separate thread to avoid blocking the UI
+        threading.Thread(target=train_and_save_model).start()        
         messagebox.showinfo("Succès", "Opération phytosanitaire enregistrée.")
     except sqlite3.Error as e:
         messagebox.showerror("Erreur de base de données", f"Une erreur s'est produite lors de l'enregistrement : {e}")

@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
-from tkinter import messagebox
+from tkinter import ttk
+from deep_learning.supervised_learning import train_and_save_model
 from temps import interface_saisie_temps
 from phytosanitaires import interface_phytosanitaire
 from reports import interface_generer_rapport
@@ -10,6 +10,7 @@ from gestion_employes_operations import interface_creer_employe, interface_creer
 from EmailConfig import interface_email_config  # Importer correctement depuis EmailConfig.py
 import sqlite3
 from analyse import AnalyseDonnees  # Importer la classe AnalyseDonnees
+from supervised_interface import predict_effectiveness_interface  # Import the new function
 
  
 def connexion_db():
@@ -139,6 +140,7 @@ def main():
     menu_analyse = tk.Menu(menu_bar, tearoff=0)
     menu_analyse.add_command(label="Synthèse Annuelle des Travaux", command=analyse_donnees.afficher_synthese_annuelle)
     menu_analyse.add_command(label="Afficher Graphique des Travaux", command=analyse_donnees.afficher_graphique_synthese)
+    menu_analyse.add_command(label="Prédire Efficacité des Traitements", command=predict_effectiveness_interface)  # New Entry
     menu_bar.add_cascade(label="Analyse", menu=menu_analyse)
 
     # Configurer le menu
@@ -147,4 +149,6 @@ def main():
 
 # Lancer l'application principale
 if __name__ == "__main__":
+    train_and_save_model()
+    
     main()
