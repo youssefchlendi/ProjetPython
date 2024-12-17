@@ -27,7 +27,7 @@ def predict_effectiveness_interface():
 
             # Prepare input data
             input_data = pd.DataFrame([[maladie_input, stade_input, methode_input]], 
-                                      columns=['maladie', 'stade', 'methode'])
+                                    columns=['maladie', 'stade', 'methode'])
             for col in ['maladie', 'stade', 'methode']:
                 if input_data[col][0] not in label_encoders[col].classes_:
                     messagebox.showerror("Error", f"Invalid value for {col}: '{input_data[col][0]}'")
@@ -39,10 +39,19 @@ def predict_effectiveness_interface():
             labels = {2: "Highly Effective", 1: "Effective", 0: "Partially Effective", -1: "Ineffective", -2: "Failed"}
             prediction = labels.get(result[0], "Unknown")
 
+            # Set color based on result
+            if result[0] >= 1:  # Positive outcomes: Effective or Highly Effective
+                color = "green"
+            elif result[0] == 0:  # Neutral outcome: Partially Effective
+                color = "orange"
+            else:  # Negative outcomes: Ineffective or Failed
+                color = "red"
+
             # Display prediction result
-            result_label.config(text=f"Prediction: {prediction}", fg="green")
+            result_label.config(text=f"Prediction: {prediction}", fg=color)
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
+
 
     # Main prediction window
     root = tk.Toplevel()
