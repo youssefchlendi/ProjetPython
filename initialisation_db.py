@@ -50,6 +50,14 @@ def creer_db():
                         password TEXT NOT NULL
                     )''')
         
+        # Création de la table Maladies
+        # Ce table contient 3 colonnes : id, nom, et gravite la gravité de la maladie peut être "mild", "moderate", ou "severe"
+        c.execute('''CREATE TABLE IF NOT EXISTS maladies (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nom TEXT NOT NULL,
+                        gravite TEXT NOT NULL
+                    )''')
+        
         # Commit des changements
         conn.commit()
         print("Base de données initialisée avec succès, y compris la table de configuration d'email.")

@@ -6,6 +6,27 @@ fake = Faker()
 db = sqlite3.connect('viticulture.db')  # Replace with your actual database path
 cursor = db.cursor()
 
+def seed_maladies():
+    if cursor.execute("SELECT * FROM maladies").fetchone():
+        print("Maladies table already seeded.")
+        return
+    mild_diseases = ["Powdery Mildew", "Downy Mildew", "Black Rot", "Phomopsis Cane and Leaf Spot"]
+    moderate_diseases = ["Anthracnose", "Grapevine Leafroll Disease", "Esca", "Eutypa Dieback"]
+    severe_diseases = [
+      "Botrytis Bunch Rot", "Fanleaf Degeneration", "Crown Gall",
+      "Grapevine Trunk Diseases", "Grapevine Yellow Speckle Viroid",
+      "Grapevine Red Blotch Disease"
+    ]
+    
+    for disease in mild_diseases:
+        cursor.execute("INSERT INTO maladies (nom, gravite) VALUES (?, ?)", (disease, "mild"))
+    for disease in moderate_diseases:
+        cursor.execute("INSERT INTO maladies (nom, gravite) VALUES (?, ?)", (disease, "moderate"))
+    for disease in severe_diseases:
+        cursor.execute("INSERT INTO maladies (nom, gravite) VALUES (?, ?)", (disease, "severe"))
+    db.commit()
+    print("Maladies seeded successfully.")
+
 # Seed employes Table
 def seed_employes(n=50):
     for _ in range(n):
@@ -90,6 +111,7 @@ seed_operations()
 seed_temps_travail(100)
 seed_phytosanitaires(30)
 seed_email_settings(1)
+seed_maladies()
 
 # Close the database connection
 cursor.close()

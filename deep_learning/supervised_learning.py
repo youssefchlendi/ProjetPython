@@ -14,21 +14,26 @@ def train_and_save_model():
     data = pd.read_sql_query(query, conn)
     conn.close()
     return data
+  
+  def load_diseases():
+    conn = sqlite3.connect("viticulture.db")
+    query = "SELECT * FROM maladies"
+    diseases = pd.read_sql_query(query, conn)
+    conn.close()
+    return diseases
 
   # Function to generate labels
   def label_effectiveness(obs, stade, maladie):
     """
     Generate effectiveness labels based on observation, stage, and disease severity.
     """
-    # Define disease severity levels
-    mild_diseases = ["Powdery Mildew", "Downy Mildew", "Black Rot", "Phomopsis Cane and Leaf Spot"]
-    moderate_diseases = ["Anthracnose", "Grapevine Leafroll Disease", "Esca", "Eutypa Dieback"]
-    severe_diseases = [
-      "Botrytis Bunch Rot", "Fanleaf Degeneration", "Crown Gall",
-      "Grapevine Trunk Diseases", "Grapevine Yellow Speckle Viroid",
-      "Grapevine Red Blotch Disease"
-    ]
-
+    
+    diseases = load_diseases()
+    
+    mild_diseases = diseases[diseases['gravite'] == 'mild']['nom'].tolist()
+    moderate_diseases = diseases[diseases['gravite'] == 'moderate']['nom'].tolist()
+    severe_diseases = diseases[diseases['gravite'] == 'severe']['nom'].tolist()
+   
     # Clean observation
     obs = obs.strip().lower()
 

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from deep_learning.regression_model import train_work_hours_regression
 from deep_learning.supervised_learning import train_and_save_model
+from gestion_maladies_operations import interface_creer_maladie, interface_rechercher_maladie
 from regression_interface import predict_work_hours_interface
 from temps import interface_saisie_temps
 from phytosanitaires import interface_phytosanitaire
@@ -111,12 +112,15 @@ def main():
     menu_gestion = tk.Menu(menu_bar, tearoff=0)
     menu_gestion.add_command(label="Créer un Employé", command=interface_creer_employe)
     menu_gestion.add_command(label="Créer une Opération", command=interface_creer_operation)
+    menu_gestion.add_command(label="Créer une Maladie", command=interface_creer_maladie)
+    menu_gestion.add_separator()
     menu_gestion.add_command(label="Quitter", command=root.quit)
     menu_bar.add_cascade(label="Gestion", menu=menu_gestion)
 
     # Menu Consultation
     menu_consultation = tk.Menu(menu_bar, tearoff=0)
     menu_consultation.add_command(label="Consulter Employés", command=lambda: consulter_donnees("employes", ["id", "nom", "poste"]))
+    menu_consultation.add_command(label="Consulter les Maladies", command=interface_rechercher_maladie)
     menu_consultation.add_command(label="Consulter Opérations", command=lambda: consulter_donnees("operations", ["id", "nom", "type"]))
     menu_consultation.add_command(label="Consulter Temps de Travail", command=lambda: consulter_tmps_travail())
     menu_consultation.add_command(label="Consulter Phytosanitaires", command=lambda: consulter_phytosanitaires())

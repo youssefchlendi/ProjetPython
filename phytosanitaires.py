@@ -51,6 +51,20 @@ def enregistrer_phytosanitaire(employe_id, operation_id, maladie, stade, methode
     finally:
         if conn:
             conn.close()
+            
+def get_maladie_list():
+    try:
+        conn = connexion_db()
+        c = conn.cursor()
+        c.execute("SELECT nom FROM maladies")  # Sélectionne le nom de chaque maladie
+        result = c.fetchall()
+        return result
+    except sqlite3.Error as e:
+        messagebox.showerror("Erreur de base de données", f"Une erreur s'est produite : {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
 
 # Interface pour la saisie des opérations phytosanitaires
 def interface_phytosanitaire():
@@ -68,13 +82,15 @@ def interface_phytosanitaire():
     tk.Label(root, text="ID Opération").grid(row=1, column=0)
     operation_combobox = ttk.Combobox(root, values=[op[1] for op in operations])  # Liste des opérations
     operation_combobox.grid(row=1, column=1)
+    
+    maladies = get_maladie_list()
 
     tk.Label(root, text="Maladie").grid(row=2, column=0)
-    maladie = tk.Entry(root)
-    maladie.grid(row=2, column=1)
+    maladie_combobox = ttk.Combobox(root, values=[maladie[0] for maladie in maladies])
+    maladie_combobox.grid(row=2, column=1)
 
     tk.Label(root, text="Stade").grid(row=3, column=0)
-    stade = tk.Entry(root)
+    stade = ttk.Combobox(root, values=["early", "mid", "late"])
     stade.grid(row=3, column=1)
 
     tk.Label(root, text="Méthode").grid(row=4, column=0)
@@ -82,7 +98,8 @@ def interface_phytosanitaire():
     methode.grid(row=4, column=1)
 
     tk.Label(root, text="Observation").grid(row=5, column=0)
-    observation = tk.Entry(root)
+    # ["dead", "alive", "success", "failure"]
+    observation = ttk.Combobox(root, values=["dead", "alive", "success", "failure"])
     observation.grid(row=5, column=1)
 
     # Fonction de sauvegarde avec validation
@@ -93,7 +110,7 @@ def interface_phytosanitaire():
                 raise ValueError("Le champ 'ID Employé' est obligatoire.")
             if not operation_combobox.get().strip():
                 raise ValueError("Le champ 'ID Opération' est obligatoire.")
-            if not maladie.get().strip():
+            if not maladie_combobox.get().strip():
                 raise ValueError("Le champ 'Maladie' est obligatoire.")
             if not stade.get().strip():
                 raise ValueError("Le champ 'Stade' est obligatoire.")
@@ -107,7 +124,7 @@ def interface_phytosanitaire():
             operation_id_val = int(operations[operation_combobox.current()][0])
 
             # Enregistrement si toutes les validations sont réussies
-            enregistrer_phytosanitaire(employe_id_val, operation_id_val, maladie.get(), stade.get(), methode.get(), observation.get())
+            enregistrer_phytosanitaire(employe_id_val, operation_id_val, maladie_combobox.get(), stade.get(), methode.get(), observation.get())
             root.destroy()
 
         except ValueError as e:
